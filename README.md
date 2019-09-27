@@ -22,10 +22,10 @@ Add it in your app level build.gradle
     		implementation 'com.github.rajeshbdabhi:SecureSharedPreferences:latest-version'
 	}
 	
-Usage
+Usage:
 
 	//initialise
-        val secureSharedPreferences = SecureSharedPreferences(this, "pref_name", "1234")	
+	val secureSharedPreferences = SecureSharedPreferences(this, "pref_name", "1234")	
         
 	// shared preference editor
 	val editor = secureSharedPreferences.edit()
@@ -33,6 +33,6 @@ Usage
 	// put string
 	editor.putString("key", "value")
 	
-        //get string
+	//get string
 	val key = secureSharedPreferences.getString("key", "this default value")
 	
