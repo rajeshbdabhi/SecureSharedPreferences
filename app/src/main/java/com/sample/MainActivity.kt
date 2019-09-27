@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
 
         // put string
         editor.putString("key", "value")
-
         //get string
         val key = secureSharedPreferences.getString("key", "this default value")
 

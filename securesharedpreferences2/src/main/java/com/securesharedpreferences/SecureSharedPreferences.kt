@@ -14,6 +14,8 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.experimental.and
+import java.nio.file.Files.size
+
 
 class SecureSharedPreferences(
     context: Context,
@@ -27,9 +29,28 @@ class SecureSharedPreferences(
         sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
     }
 
-
     override fun getAll(): Map<String, *>? {
-        return null
+        val encryptedMap = sharedPreferences.all
+        val decryptedMap = HashMap<String, Any>(encryptedMap.size)
+
+        for ((key, cipherText) in encryptedMap) {
+            try {
+                val stringSet = getDecryptedStringSet(cipherText)
+
+                if (stringSet != null) {
+                    decryptedMap[key] = stringSet
+                } else {
+                    decryptedMap[key] = decrypt(ENCRYPTED_PASSWORD, cipherText.toString())
+                }
+            } catch (e: Exception) {
+                if (DEBUG_LOG_ENABLED) {
+                    Log.w(TAG, "error during getAll", e)
+                }
+                // Ignore issues that unencrypted values and use instead raw cipher text string
+                decryptedMap[key] = cipherText.toString()
+            }
+        }
+        return decryptedMap
     }
 
     override fun getString(s: String, s1: String?): String? {
@@ -397,6 +418,30 @@ class SecureSharedPreferences(
             }
             return String(hexChars)
         }
+    }
+
+    private fun getDecryptedStringSet(cipherText: Any?): Set<String>? {
+        if (cipherText == null) {
+            return null
+        }
+
+        val isSet = cipherText is Set<*>
+
+        if (!isSet) {
+            return null
+        }
+
+        val encryptedSet = cipherText as Set<*>?
+        val decryptedSet = java.util.HashSet<String>()
+
+        for (`object` in encryptedSet!!) {
+            if (`object` is String) {
+                decryptedSet.add(decrypt(ENCRYPTED_PASSWORD, `object`))
+            } else {
+                return null
+            }
+        }
+        return decryptedSet
     }
 
 }
