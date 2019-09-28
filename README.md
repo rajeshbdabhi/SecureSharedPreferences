@@ -29,7 +29,7 @@ Usage:
 SecureSharedPreferences use like normal SharedPreferences
 
 	//initialise
-	val secureSharedPreferences = SecureSharedPreferences(this, "pref_name", "1234")	
+	val secureSharedPreferences = SecureSharedPreferences(this, "pref_name", "password")	
         
 	// shared preference editor
 	val editor = secureSharedPreferences.edit()
