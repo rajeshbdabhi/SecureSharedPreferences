@@ -41,6 +41,7 @@ SecureSharedPreferences use like normal SharedPreferences
 	val key = secureSharedPreferences.getString("key", "this default value")
 	
 Version 1.0.1
+
 Secure old SharedPreference:
 
 	val oldPref = getSharedPreferences("old_name", 0)
