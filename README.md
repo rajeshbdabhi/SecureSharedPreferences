@@ -40,3 +40,28 @@ SecureSharedPreferences use like normal SharedPreferences
 	//get string
 	val key = secureSharedPreferences.getString("key", "this default value")
 	
+Version 1.0.1
+Secure old SharedPreference:
+
+	val oldPref = getSharedPreferences("old_name", 0)
+        SecureOldSharedPreferences(
+            this,
+            oldPref,
+            "old_name",
+            "1234",
+            object : SecureOldSharedPreferences.EncryptListener {
+                override fun encrypted() {
+                    // encryption done
+                }
+            }).execute()
+	    
+	// featch new SecureSharedPreferences with old name and new password like this.
+	val newsecureSharedPreferences = SecureSharedPreferences(this@MainActivity, "old_name", "1234")
+
+
+Encrypt and Decrypt other strings:
+
+	// for simple encrypt and decrypt any string data
+	val encoded = SecureSharedPreferences.encrypt("test", "title")
+	val decod = SecureSharedPreferences.decrypt("test", encoded)
+	
