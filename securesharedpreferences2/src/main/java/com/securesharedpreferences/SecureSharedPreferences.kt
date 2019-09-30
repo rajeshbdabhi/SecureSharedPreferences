@@ -271,14 +271,14 @@ class SecureSharedPreferences(
          * @return Base64 encoded CipherText
          * @throws GeneralSecurityException if problems occur during encryption
          */
-        fun encrypt(password: String, message: String?): String {
+        fun encrypt(password: String, text: String?): String {
 
             try {
                 val key = generateKey(password)
 
-                log("message", message)
+                log("message", text)
 
-                val cipherText = encrypt(key, ivBytes, message!!.toByteArray(charset(CHARSET)))
+                val cipherText = encrypt(key, ivBytes, text!!.toByteArray(charset(CHARSET)))
 
                 //NO_WRAP is important as was getting \n at the end
                 val encoded = Base64.encodeToString(cipherText, Base64.NO_WRAP)
@@ -307,7 +307,7 @@ class SecureSharedPreferences(
          * @throws GeneralSecurityException if something goes wrong during encryption
          */
         @Throws(GeneralSecurityException::class)
-        fun encrypt(key: SecretKeySpec, iv: ByteArray, message: ByteArray): ByteArray {
+        private fun encrypt(key: SecretKeySpec, iv: ByteArray, message: ByteArray): ByteArray {
             val cipher = Cipher.getInstance(AES_MODE)
             val ivSpec = IvParameterSpec(iv)
             cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec)
@@ -325,12 +325,12 @@ class SecureSharedPreferences(
          * @return message in Plain text (String UTF-8)
          * @throws GeneralSecurityException if there's an issue decrypting
          */
-        fun decrypt(password: String, base64EncodedCipherText: String?): String {
+        fun decrypt(password: String, textEncoded: String?): String {
             try {
                 val key = generateKey(password)
 
-                log("base64EncodedCipherText", base64EncodedCipherText)
-                val decodedCipherText = Base64.decode(base64EncodedCipherText, Base64.NO_WRAP)
+                log("base64EncodedCipherText", textEncoded)
+                val decodedCipherText = Base64.decode(textEncoded, Base64.NO_WRAP)
                 log("decodedCipherText", decodedCipherText)
 
                 val decryptedBytes = decrypt(key, ivBytes, decodedCipherText)
@@ -361,7 +361,11 @@ class SecureSharedPreferences(
          * @throws GeneralSecurityException if something goes wrong during encryption
          */
         @Throws(GeneralSecurityException::class)
-        fun decrypt(key: SecretKeySpec, iv: ByteArray, decodedCipherText: ByteArray): ByteArray {
+        private fun decrypt(
+            key: SecretKeySpec,
+            iv: ByteArray,
+            decodedCipherText: ByteArray
+        ): ByteArray {
             val cipher = Cipher.getInstance(AES_MODE)
             val ivSpec = IvParameterSpec(iv)
             cipher.init(Cipher.DECRYPT_MODE, key, ivSpec)
@@ -418,6 +422,7 @@ class SecureSharedPreferences(
             }
             return String(hexChars)
         }
+
     }
 
     private fun getDecryptedStringSet(cipherText: Any?): Set<String>? {
